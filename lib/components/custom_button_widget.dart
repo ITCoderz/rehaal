@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
 import 'package:rehaal/utils/app_theme.dart';
@@ -18,11 +19,15 @@ class CustomButtonWidget extends StatelessWidget {
   final Color bgColor;
   final Color? borderColor;
   final bool isBtnDisabled;
+  final bool isIcon;
+  final String? icon;
   CustomButtonWidget({
     required this.btnLabel,
     this.onTap,
+    this.isIcon = false,
     this.borderRadius = 80.0,
-    this.height = 60.0,
+    this.icon,
+    this.height = 50.0,
     this.isWhiteBg = false,
     this.bgColor = AppTheme.primaryColor,
     this.isBtnDisabled = false,
@@ -67,18 +72,23 @@ class CustomButtonWidget extends StatelessWidget {
             elevation: WidgetStatePropertyAll(0),
             backgroundColor: WidgetStatePropertyAll(Colors.transparent)),
         onPressed: onTap,
-        child: Text(
-          btnLabel,
-          style: btnLabelStyle ??
-              TextStyles.labelTextStyle.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16.sp,
-                  color: isWhiteBg
-                      ? AppTheme.blackColor
-                      : isBtnDisabled
-                          ? AppTheme.whiteColor
-                          : AppTheme.whiteColor),
-        ),
+        child: isIcon!
+            ? SvgPicture.asset(
+                icon!,
+                color: AppTheme.whiteColor,
+              )
+            : Text(
+                btnLabel,
+                style: btnLabelStyle ??
+                    TextStyles.labelTextStyle.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16.sp,
+                        color: isWhiteBg
+                            ? AppTheme.blackColor
+                            : isBtnDisabled
+                                ? AppTheme.whiteColor
+                                : AppTheme.whiteColor),
+              ),
       ),
     );
   }

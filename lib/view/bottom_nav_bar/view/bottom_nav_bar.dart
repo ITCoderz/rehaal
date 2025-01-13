@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:rehaal/utils/app_text.dart';
+import 'package:rehaal/view/ai_assistant/view/ai_assistant.dart';
 import 'package:rehaal/view/bottom_nav_bar/components/custom_navigation_bar.dart';
 import 'package:rehaal/view/bottom_nav_bar/controller/bottom_bar_controller.dart';
 import 'package:rehaal/view/home/view/home_view.dart';
@@ -19,13 +22,25 @@ class BottomNavBar extends StatelessWidget {
             return HomeView();
           }
           if (controller.tabIndex.value == 1) {
-            return HomeView();
+            return Center(
+              child: AppText(
+                text: 'Expenses',
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            );
           }
           if (controller.tabIndex.value == 2) {
-            return HomeView();
+            return AiAssistant();
           }
           if (controller.tabIndex.value == 3) {
-            return HomeView();
+            return Center(
+              child: AppText(
+                text: 'Analysis',
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            );
           }
           return HomeView();
         }),

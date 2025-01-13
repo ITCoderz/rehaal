@@ -41,6 +41,7 @@ class NewPassword extends StatelessWidget {
               fieldLabel: 'New Password',
               focusNode: controller.fnResetPassord,
               controller: controller.tecResetPassword,
+              givePadding: true,
               hintText: '******',
               prefix: Image.asset(
                 AppIcons.emailIcon,
@@ -54,6 +55,7 @@ class NewPassword extends StatelessWidget {
               fieldLabel: 'Repeat Password',
               focusNode: controller.fnResetCPassword,
               controller: controller.tecResetPasswordC,
+              givePadding: true,
               hintText: '******',
               prefix: Image.asset(
                 AppIcons.emailIcon,

@@ -43,6 +43,7 @@ class ResetPassword extends StatelessWidget {
               focusNode: controller.fnResetEmail,
               controller: controller.tecResetEmail,
               hintText: 'test@test.com',
+              givePadding: true,
               prefix: Image.asset(
                 AppIcons.emailIcon,
                 width: 20,

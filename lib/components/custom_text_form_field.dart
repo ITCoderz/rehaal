@@ -43,6 +43,7 @@ class CustomTextFormField extends StatelessWidget {
     this.validator,
     this.isViewMode = false,
     this.onChanged,
+    this.givePadding = false,
   });
 
   final Alignment? alignment;
@@ -78,6 +79,7 @@ class CustomTextFormField extends StatelessWidget {
   final TextStyle? labelStyle;
 
   final Widget? prefix;
+  final bool? givePadding;
 
   final BoxConstraints? prefixConstraints;
 
@@ -119,6 +121,7 @@ class CustomTextFormField extends StatelessWidget {
               AppText(
                 text: fieldLabel,
                 color: Color(0xffADADAD),
+                style: labelStyle,
               )
             ],
           ).paddingOnly(left: 15),
@@ -158,7 +161,8 @@ class CustomTextFormField extends StatelessWidget {
                 fontWeight: FontWeight.w400,
                 color: AppTheme.blackColor.withOpacity(0.5)),
         prefixIcon: Padding(
-          padding: const EdgeInsets.only(left: 20.0, right: 10),
+          padding: EdgeInsets.only(
+              left: givePadding! ? 20 : 0.0, right: givePadding! ? 10 : 0),
           child: prefix,
         ),
         prefixIconConstraints: prefixConstraints,
@@ -203,4 +207,88 @@ class CustomTextFormField extends StatelessWidget {
               borderSide: BorderSide(color: borderColor, width: 0.5),
             ),
       );
+}
+
+class ChatFieldWidget extends StatelessWidget {
+  const ChatFieldWidget(
+      {this.hintText,
+      this.obscureText,
+      this.readOnly,
+      this.controller,
+      this.iconPath,
+      this.iconPressed,
+      this.keyboardType,
+      this.width,
+      this.sufIcon = false,
+      this.onTap,
+      this.title,
+      this.iconColor,
+      this.textCapt = true,
+      this.onchange,
+      super.key,
+      this.validator,
+      this.widget,
+      this.maxLines});
+
+  final String? hintText, title;
+  final IconData? iconPath;
+  final bool? obscureText;
+  final bool? readOnly;
+  final TextInputType? keyboardType;
+  final double? width;
+  final bool sufIcon;
+  final Color? iconColor;
+  final bool textCapt;
+  final String? Function(String?)? validator;
+  final Function()? iconPressed, onTap;
+  final TextEditingController? controller;
+  final int? maxLines;
+  final Widget? widget;
+  final Function(String)? onchange;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+        width: width ?? context.width * .88,
+        child: TextFormField(
+            onTap: onTap,
+            onTapOutside: (e) {
+              FocusScope.of(context).unfocus();
+            },
+            maxLines: maxLines ?? null, // Allows dynamic expansion
+            textCapitalization: textCapt
+                ? TextCapitalization.sentences
+                : TextCapitalization.none,
+            validator: validator,
+            keyboardType: keyboardType ?? TextInputType.text,
+            readOnly: readOnly ?? false,
+            controller: controller,
+            textAlignVertical: TextAlignVertical.top, // Aligns text to top
+            obscureText: obscureText ?? false,
+            onChanged: onchange,
+            decoration: InputDecoration(
+                prefixIcon: widget,
+                filled: true,
+                fillColor: AppTheme.whiteColor,
+                hintText: hintText,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 19,
+                  vertical: 10, // Adds vertical padding for better appearance
+                ),
+                hintStyle: TextStyles.labelTextStyle.copyWith(
+                  fontSize: 14.sp,
+                  color: AppTheme.blackColor.withOpacity(0.4),
+                ),
+                suffixIcon: sufIcon == true
+                    ? InkWell(
+                        onTap: iconPressed,
+                        child: Icon(
+                          iconPath,
+                          size: 19,
+                          color: iconColor,
+                        ),
+                      )
+                    : const SizedBox(),
+                border: InputBorder.none)));
+  }
 }

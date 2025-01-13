@@ -52,6 +52,7 @@ class LoginView extends StatelessWidget {
                 fieldLabel: 'E-mail Address',
                 focusNode: controller.fnEmailL,
                 controller: controller.tecEmailL,
+                givePadding: true,
                 hintText: 'test@test.com',
                 prefix: Image.asset(
                   AppIcons.emailIcon,
@@ -63,6 +64,7 @@ class LoginView extends StatelessWidget {
               verticalSpace(30),
               CustomTextFormField(
                 fieldLabel: 'Password',
+                givePadding: true,
                 focusNode: controller.fnPasswordL,
                 controller: controller.tecPasswordL,
                 prefix: Image.asset(
