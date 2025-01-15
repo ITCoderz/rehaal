@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:rehaal/components/custom_button_widget.dart';
 import 'package:rehaal/components/custom_text_form_field.dart';
+import 'package:rehaal/models/plan_model.dart';
 import 'package:rehaal/utils/app_images.dart';
 import 'package:rehaal/utils/app_text.dart';
 import 'package:rehaal/utils/app_theme.dart';
@@ -15,7 +17,15 @@ class AddDurationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final arguments = Get.arguments;
+    bool isView = false;
+    bool isEdit = false;
     final controller = Get.put(PlansController());
+    if (arguments != null) {
+      isView = arguments['isView'];
+      isEdit = arguments['isEdit'];
+      Get.log(arguments['isView'].toString());
+    }
 
     return SafeArea(
         child: Scaffold(
@@ -53,7 +63,10 @@ class AddDurationView extends StatelessWidget {
                     fieldLabel: 'Start date',
                     focusNode: controller.fnDurationSDate,
                     onTap: () {
-                      controller.selectDate(context, isStartDate: true);
+                      if (isView) {
+                      } else {
+                        controller.selectDate(context, isStartDate: true);
+                      }
                     },
                     isViewMode: true,
                     labelStyle: TextStyles.labelTextStyle.copyWith(
@@ -70,7 +83,10 @@ class AddDurationView extends StatelessWidget {
                     fieldLabel: 'End date',
                     isViewMode: true,
                     onTap: () {
-                      controller.selectDate(context, isStartDate: false);
+                      if (isView) {
+                      } else {
+                        controller.selectDate(context, isStartDate: false);
+                      }
                     },
                     labelStyle: TextStyles.labelTextStyle.copyWith(
                         fontSize: 18.sp,
@@ -83,18 +99,19 @@ class AddDurationView extends StatelessWidget {
                     hintText: '01/01/2024',
                   ),
                   verticalSpace(100),
-                  SizedBox(
-                    width: Get.width * 0.7,
-                    child: Center(
-                      child: CustomButtonWidget(
-                        btnLabel: 'Add',
-                        isGradientBg: true,
-                        onTap: () {
-                          Get.back();
-                        },
+                  if (!isView)
+                    SizedBox(
+                      width: Get.width * 0.7,
+                      child: Center(
+                        child: CustomButtonWidget(
+                          btnLabel: 'Add',
+                          isGradientBg: true,
+                          onTap: () {
+                            Get.back();
+                          },
+                        ),
                       ),
-                    ),
-                  )
+                    )
                 ])))));
   }
 }

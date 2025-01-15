@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -11,6 +13,7 @@ import 'package:rehaal/utils/app_routes.dart';
 import 'package:rehaal/utils/app_text.dart';
 import 'package:rehaal/utils/app_theme.dart';
 import 'package:rehaal/utils/ui_gaps.dart';
+import 'package:rehaal/view/home/controller/home_controller.dart';
 import 'package:rehaal/view/plans/controller/plans_controller.dart';
 
 class AddNewPlanView extends StatelessWidget {
@@ -18,7 +21,30 @@ class AddNewPlanView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final arguments = Get.arguments;
+    bool isView = false;
+    bool isEdit = false;
     final controller = Get.put(PlansController());
+    final homeController = Get.find<HomeController>();
+    if (arguments != null) {
+      Get.log(arguments['isView'].toString());
+      isView = arguments['isView'];
+      isEdit = arguments['isEdit'];
+      final planModel = arguments['planModel'] as PlanModel;
+      controller.tecDestination.text = planModel.destinationName;
+      controller.tecBudget.text = planModel.budget.toString();
+      controller.tecDurationSDate.text =
+          "${DateFormat('dd/MM/yyyy').format(planModel.startDate)}";
+      controller.tecDurationEDate.text =
+          "${DateFormat('dd/MM/yyyy').format(planModel.endDate)}";
+      controller.isImageSelected.value = true;
+
+      controller.selectedImagePath.value = planModel.imagePath!;
+      homeController.activities.value =
+          planModel.activities.map((e) => e).toList();
+      homeController.members.value = planModel.members.map((e) => e).toList();
+    }
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: AppTheme.whiteColor,
@@ -30,7 +56,14 @@ class AddNewPlanView extends StatelessWidget {
                 return controller.isImageSelected.value
                     ? Stack(
                         children: [
-                          Image.asset(AppImages.planImage),
+                          Image.file(
+                            controller.selectedImage.value == null
+                                ? File(controller.selectedImagePath.value)
+                                : controller.selectedImage.value!,
+                            width: double.infinity,
+                            height: 300,
+                            fit: BoxFit.cover,
+                          ),
                           InkWell(
                             onTap: () {
                               Get.back();
@@ -40,6 +73,7 @@ class AddNewPlanView extends StatelessWidget {
                                   horizontal: 20.0, vertical: 10),
                               child: Icon(
                                 Icons.arrow_back,
+                                color: AppTheme.whiteColor,
                               ),
                             ),
                           ),
@@ -53,10 +87,11 @@ class AddNewPlanView extends StatelessWidget {
                       children: [
                         verticalSpace(30),
                         InkWell(
-                            onTap: () {
-                              Get.back();
-                            },
-                            child: Icon(Icons.arrow_back)),
+                          onTap: () {
+                            Get.back();
+                          },
+                          child: Icon(Icons.arrow_back),
+                        ),
                         verticalSpace(30),
                       ],
                     ).paddingSymmetric(horizontal: 20)),
@@ -76,26 +111,25 @@ class AddNewPlanView extends StatelessWidget {
                             right: -30,
                             child: InkWell(
                               onTap: () {
-                                controller.isImageSelected.value = true;
+                                controller.selectImageFromGallery();
                               },
                               child: Container(
                                 width: 55.w,
                                 height: 55.h,
                                 decoration: BoxDecoration(
-                                    color: Color(0xff71AEF3).withOpacity(0.7),
-                                    shape: BoxShape.circle),
+                                  color: Color(0xff71AEF3).withOpacity(0.7),
+                                  shape: BoxShape.circle,
+                                ),
                                 child: Center(
                                   child: Icon(
                                     Icons.add,
-                                    color: Color(
-                                      0xff3863AA,
-                                    ),
+                                    color: Color(0xff3863AA),
                                     size: 40,
                                   ),
                                 ),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ))
                     : SizedBox();
@@ -107,6 +141,7 @@ class AddNewPlanView extends StatelessWidget {
                   CustomTextFormField(
                     fieldLabel: 'Destination name',
                     focusNode: controller.fnDestination,
+                    isViewMode: isView ?? false,
                     givePadding: true,
                     controller: controller.tecDestination,
                     hintText: 'Enter destination name...',
@@ -115,7 +150,8 @@ class AddNewPlanView extends StatelessWidget {
                   verticalSpace(20),
                   InkWell(
                     onTap: () {
-                      Get.toNamed(AppRoutes.addDurationView);
+                      Get.toNamed(AppRoutes.addDurationView,
+                          arguments: arguments);
                     },
                     child: Row(
                       children: [
@@ -152,7 +188,8 @@ class AddNewPlanView extends StatelessWidget {
                   verticalSpace(20),
                   InkWell(
                     onTap: () {
-                      Get.toNamed(AppRoutes.viewActivities);
+                      Get.toNamed(AppRoutes.viewActivities,
+                          arguments: {'isView': isView, 'isEdit': isEdit});
                     },
                     child: Row(
                       children: [
@@ -162,7 +199,7 @@ class AddNewPlanView extends StatelessWidget {
                           decoration: BoxDecoration(
                               color: Color(0xffEff5fb), shape: BoxShape.circle),
                           child: Icon(
-                            Icons.calendar_month,
+                            Icons.map_outlined,
                             color: AppTheme.iconColor,
                           ),
                         ),
@@ -175,7 +212,7 @@ class AddNewPlanView extends StatelessWidget {
                         ),
                         Spacer(),
                         Icon(
-                          Icons.map_outlined,
+                          Icons.arrow_forward,
                           color: AppTheme.iconColor,
                         )
                       ],
@@ -190,6 +227,7 @@ class AddNewPlanView extends StatelessWidget {
                   CustomTextFormField(
                     fieldLabel: 'Set Budget',
                     focusNode: controller.fnBudget,
+                    isViewMode: isView,
                     controller: controller.tecBudget,
                     textInputType: TextInputType.number,
                     prefixConstraints: BoxConstraints(),
@@ -198,40 +236,42 @@ class AddNewPlanView extends StatelessWidget {
                   ),
                   verticalSpace(20),
                   Obx(() {
-                    if (controller.members.isEmpty) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          AppText(
-                            text: 'Do you want to add travel members?',
-                            fontSize: 16.sp,
-                            color: AppTheme.greyTextColor,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          horizontalSpace(10),
-                          InkWell(
-                            onTap: () {
-                              Get.toNamed(AppRoutes.addMember);
-                            },
-                            child: Container(
-                              width: 40.w,
-                              height: 40.h,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: AppTheme.primaryColor,
+                    if (homeController.members.isEmpty) {
+                      return isView
+                          ? SizedBox()
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                AppText(
+                                  text: 'Do you want to add travel members?',
+                                  fontSize: 16.sp,
+                                  color: AppTheme.greyTextColor,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  Icons.add,
-                                  color: AppTheme.primaryColor,
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      );
+                                horizontalSpace(10),
+                                InkWell(
+                                  onTap: () {
+                                    Get.toNamed(AppRoutes.addMember);
+                                  },
+                                  child: Container(
+                                    width: 40.w,
+                                    height: 40.h,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: AppTheme.primaryColor,
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.add,
+                                        color: AppTheme.primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            );
                     } else {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,7 +327,7 @@ class AddNewPlanView extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                ...controller.members.map((member) {
+                                ...homeController.members.map((member) {
                                   return Container(
                                     child: Column(
                                       children: [
@@ -309,7 +349,6 @@ class AddNewPlanView extends StatelessWidget {
                                           text: member.memberName,
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.w500,
-                                          overflow: TextOverflow.visible,
                                           color: AppTheme.blackColor
                                               .withOpacity(0.8),
                                           textAlign: TextAlign.center,
@@ -326,50 +365,59 @@ class AddNewPlanView extends StatelessWidget {
                     }
                   }),
                   verticalSpace(20),
-                  Center(
-                    child: SizedBox(
-                      width: Get.width * 0.6,
-                      child: CustomButtonWidget(
-                        btnLabel: 'Add',
-                        isGradientBg: true,
-                        onTap: () {
-                          String errorMessage = '';
-                          // Validate fields
-                          if (controller.tecDestination.text.isEmpty) {
-                            errorMessage = 'Please enter a destination name.';
-                          } else if (controller.tecBudget.text.isEmpty) {
-                            errorMessage = 'Please enter a budget.';
-                          } else if (controller.tecDurationSDate.text.isEmpty ||
-                              controller.tecDurationEDate.text.isEmpty) {
-                            errorMessage = 'Please select start and end dates.';
-                          } else if (controller.members.isEmpty) {
-                            errorMessage = 'Please add at least one member.';
-                          }
+                  if (!isView)
+                    Center(
+                      child: SizedBox(
+                        width: Get.width * 0.6,
+                        child: CustomButtonWidget(
+                          btnLabel: isEdit ? 'Update' : 'Add',
+                          isGradientBg: true,
+                          onTap: () {
+                            String errorMessage = '';
+                            // Validate fields
+                            if (controller.tecDestination.text.isEmpty) {
+                              errorMessage = 'Please enter a destination name.';
+                            } else if (controller.tecBudget.text.isEmpty) {
+                              errorMessage = 'Please enter a budget.';
+                            } else if (controller
+                                    .tecDurationSDate.text.isEmpty ||
+                                controller.tecDurationEDate.text.isEmpty) {
+                              errorMessage =
+                                  'Please select start and end dates.';
+                            } else if (homeController.members.isEmpty) {
+                              errorMessage = 'Please add at least one member.';
+                            }
 
-                          if (errorMessage.isNotEmpty) {
-                            Get.snackbar(
-                              'Validation Error',
-                              errorMessage,
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.red,
-                              colorText: Colors.white,
-                            );
-                            return;
-                          }
-                          PlanModel plan = PlanModel(
-                              destinationName: controller.tecDestination.text,
-                              budget: double.parse(controller.tecBudget.text),
-                              startDate: DateFormat('dd/MM/yyyy')
-                                  .parse(controller.tecDurationSDate.text),
-                              endDate: DateFormat('dd/MM/yyyy')
-                                  .parse(controller.tecDurationEDate.text),
-                              members: controller.members);
-                          controller.addPlan(plan);
-                          Get.back();
-                        },
+                            if (errorMessage.isNotEmpty) {
+                              Get.snackbar(
+                                'Validation Error',
+                                errorMessage,
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.red,
+                                colorText: Colors.white,
+                              );
+                              return;
+                            }
+                            PlanModel plan = PlanModel(
+                                destinationName: controller.tecDestination.text,
+                                budget: double.parse(controller.tecBudget.text),
+                                imagePath: controller.selectedImagePath.value,
+                                startDate: DateFormat('dd/MM/yyyy')
+                                    .parse(controller.tecDurationSDate.text),
+                                endDate: DateFormat('dd/MM/yyyy')
+                                    .parse(controller.tecDurationEDate.text),
+                                activities: homeController.activities,
+                                members: homeController.members);
+                            if (isEdit) {
+                              //controller.updatePlan(plan);
+                            } else {
+                              homeController.plans.add(plan);
+                            }
+                            Get.back();
+                          },
+                        ),
                       ),
                     ),
-                  ),
                   verticalSpace(20),
                 ],
               ).paddingSymmetric(horizontal: 20)

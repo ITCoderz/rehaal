@@ -25,6 +25,7 @@ class CreateAccountView extends StatelessWidget {
         appBar: AppBar(
           automaticallyImplyLeading: true,
           backgroundColor: AppTheme.whiteColor,
+          surfaceTintColor: AppTheme.whiteColor,
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -52,68 +53,127 @@ class CreateAccountView extends StatelessWidget {
                   ],
                 ),
                 verticalSpace(20),
-                CustomTextFormField(
-                  fieldLabel: 'Enter your full name',
-                  focusNode: controller.fnNameS,
-                  controller: controller.tecNameS,
-                  hintText: 'Your name...',
-                  prefix: Icon(
-                    Icons.person,
-                    color: AppTheme.iconColor,
-                  ),
-                  prefixConstraints: BoxConstraints(),
-                ),
-                verticalSpace(20),
-                CustomTextFormField(
-                  fieldLabel: 'Enter your email',
-                  focusNode: controller.fnEmailS,
-                  controller: controller.tecEmailS,
-                  hintText: 'test@test.com',
-                  prefix: Image.asset(
-                    AppIcons.emailIcon,
-                    width: 20,
-                    height: 20,
-                  ),
-                  prefixConstraints: BoxConstraints(),
-                ),
-                verticalSpace(20),
-                CustomTextFormField(
-                  fieldLabel: 'DOB',
-                  focusNode: controller.fnDobS,
-                  controller: controller.tecDobS,
-                  hintText: '1/1/2024',
-                  prefix: Icon(
-                    Icons.calendar_month_outlined,
-                    color: AppTheme.iconColor,
-                  ),
-                  prefixConstraints: BoxConstraints(),
-                ),
-                verticalSpace(20),
-                CustomTextFormField(
-                  fieldLabel: 'Enter your password',
-                  focusNode: controller.fnPasswordS,
-                  controller: controller.tecPasswordS,
-                  prefix: Image.asset(
-                    AppIcons.passwordIcon,
-                    width: 20,
-                    height: 20,
-                  ),
-                  hintText: '******',
-                  prefixConstraints: BoxConstraints(),
-                ),
-                verticalSpace(20),
-                CustomTextFormField(
-                  fieldLabel: 'Re-enter Password',
-                  focusNode: controller.fnCPasswordS,
-                  controller: controller.tecCPasswordS,
-                  prefix: Image.asset(
-                    AppIcons.passwordIcon,
-                    width: 20,
-                    height: 20,
-                  ),
-                  hintText: '******',
-                  prefixConstraints: BoxConstraints(),
-                ),
+                Form(
+                    key: controller.createAccountKey,
+                    child: Column(
+                      children: [
+                        CustomTextFormField(
+                          fieldLabel: 'Enter your full name',
+                          focusNode: controller.fnNameS,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter your Full Name';
+                            }
+                            return null;
+                          },
+                          givePadding: true,
+                          controller: controller.tecNameS,
+                          hintText: 'Your name...',
+                          prefix: Icon(
+                            Icons.person,
+                            color: AppTheme.iconColor,
+                          ),
+                          prefixConstraints: BoxConstraints(),
+                        ),
+                        verticalSpace(20),
+                        CustomTextFormField(
+                          fieldLabel: 'Enter your email',
+                          givePadding: true,
+                          focusNode: controller.fnEmailS,
+                          controller: controller.tecEmailS,
+                          hintText: 'test@test.com',
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter your email';
+                            } else if (!RegExp(
+                                    r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$')
+                                .hasMatch(value)) {
+                              return 'Please enter a valid email address';
+                            }
+                            return null;
+                          },
+                          prefix: Image.asset(
+                            AppIcons.emailIcon,
+                            width: 20,
+                            height: 20,
+                          ),
+                          prefixConstraints: BoxConstraints(),
+                        ),
+                        verticalSpace(20),
+                        CustomTextFormField(
+                          fieldLabel: 'DOB',
+                          isViewMode: true,
+                          givePadding: true,
+                          focusNode: controller.fnDobS,
+                          controller: controller.tecDobS,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter your DOB';
+                            }
+                            return null;
+                          },
+                          onTap: () {
+                            controller.selectDOB(context);
+                          },
+                          hintText: '1/1/2024',
+                          prefix: Icon(
+                            Icons.calendar_month_outlined,
+                            color: AppTheme.iconColor,
+                          ),
+                          prefixConstraints: BoxConstraints(),
+                        ),
+                        verticalSpace(20),
+                        CustomTextFormField(
+                          fieldLabel: 'Enter your password',
+                          givePadding: true,
+                          focusNode: controller.fnPasswordS,
+                          obscureText: true,
+                          controller: controller.tecPasswordS,
+                          validator: (value) {
+                            if (value != null) {
+                              if (value.isEmpty) {
+                                return 'Please enter your password';
+                              } else if (value.length < 6) {
+                                return 'Password must be at least 6 characters long';
+                              }
+                            }
+                            return null;
+                          },
+                          prefix: Image.asset(
+                            AppIcons.passwordIcon,
+                            width: 20,
+                            height: 20,
+                          ),
+                          hintText: '******',
+                          prefixConstraints: BoxConstraints(),
+                        ),
+                        verticalSpace(20),
+                        CustomTextFormField(
+                          fieldLabel: 'Re-enter Password',
+                          focusNode: controller.fnCPasswordS,
+                          givePadding: true,
+                          obscureText: true,
+                          controller: controller.tecCPasswordS,
+                          validator: (value) {
+                            if (value != null) {
+                              if (value.isEmpty) {
+                                return 'Please enter your password';
+                              } else if (value.length < 6) {
+                                return 'Password must be at least 6 characters long';
+                              }
+                            }
+                            return null;
+                          },
+                          prefix: Image.asset(
+                            AppIcons.passwordIcon,
+                            width: 20,
+                            height: 20,
+                          ),
+                          hintText: '******',
+                          prefixConstraints: BoxConstraints(),
+                        ),
+                      ],
+                    )),
                 verticalSpace(20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -144,7 +204,16 @@ class CreateAccountView extends StatelessWidget {
                   btnLabel: 'Create',
                   isGradientBg: true,
                   onTap: () {
-                    Get.toNamed(AppRoutes.bottomNavBar);
+                    if (controller.isCheck.value) {
+                      if (controller.createAccountKey.currentState!
+                          .validate()) {
+                        Get.toNamed(AppRoutes.bottomNavBar);
+                      }
+                    } else {
+                      Get.snackbar('Alert', "Please read the Terms of Services",
+                          backgroundColor: AppTheme.redColor,
+                          colorText: AppTheme.whiteColor);
+                    }
                   },
                 ),
                 verticalSpace(40),

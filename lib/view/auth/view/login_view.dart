@@ -18,7 +18,7 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<AuthController>();
+    final controller = Get.put(AuthController());
     return SafeArea(
       child: Scaffold(
         backgroundColor: AppTheme.whiteColor,
@@ -48,33 +48,60 @@ class LoginView extends StatelessWidget {
                 ],
               ),
               verticalSpace(30),
-              CustomTextFormField(
-                fieldLabel: 'E-mail Address',
-                focusNode: controller.fnEmailL,
-                controller: controller.tecEmailL,
-                givePadding: true,
-                hintText: 'test@test.com',
-                prefix: Image.asset(
-                  AppIcons.emailIcon,
-                  width: 20,
-                  height: 20,
-                ),
-                prefixConstraints: BoxConstraints(),
-              ),
-              verticalSpace(30),
-              CustomTextFormField(
-                fieldLabel: 'Password',
-                givePadding: true,
-                focusNode: controller.fnPasswordL,
-                controller: controller.tecPasswordL,
-                prefix: Image.asset(
-                  AppIcons.passwordIcon,
-                  width: 20,
-                  height: 20,
-                ),
-                hintText: '******',
-                prefixConstraints: BoxConstraints(),
-              ),
+              Form(
+                  key: controller.loginKey,
+                  child: Column(
+                    children: [
+                      CustomTextFormField(
+                        fieldLabel: 'E-mail Address',
+                        focusNode: controller.fnEmailL,
+                        controller: controller.tecEmailL,
+                        givePadding: true,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter your email';
+                          } else if (!RegExp(
+                                  r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$')
+                              .hasMatch(value)) {
+                            return 'Please enter a valid email address';
+                          }
+                          return null;
+                        },
+                        hintText: 'test@test.com',
+                        prefix: Image.asset(
+                          AppIcons.emailIcon,
+                          width: 20,
+                          height: 20,
+                        ),
+                        prefixConstraints: BoxConstraints(),
+                      ),
+                      verticalSpace(30),
+                      CustomTextFormField(
+                        fieldLabel: 'Password',
+                        givePadding: true,
+                        obscureText: true,
+                        focusNode: controller.fnPasswordL,
+                        controller: controller.tecPasswordL,
+                        validator: (value) {
+                          if (value != null) {
+                            if (value.isEmpty) {
+                              return 'Please enter your password';
+                            } else if (value.length < 6) {
+                              return 'Password must be at least 6 characters long';
+                            }
+                          }
+                          return null;
+                        },
+                        prefix: Image.asset(
+                          AppIcons.passwordIcon,
+                          width: 20,
+                          height: 20,
+                        ),
+                        hintText: '******',
+                        prefixConstraints: BoxConstraints(),
+                      ),
+                    ],
+                  )),
               verticalSpace(20),
               Align(
                 alignment: Alignment.centerRight,
@@ -93,7 +120,9 @@ class LoginView extends StatelessWidget {
                 btnLabel: 'Login',
                 isGradientBg: true,
                 onTap: () {
-                  Get.toNamed(AppRoutes.bottomNavBar);
+                  if (controller.loginKey.currentState!.validate()) {
+                    Get.toNamed(AppRoutes.bottomNavBar);
+                  }
                 },
               ),
               verticalSpace(20),

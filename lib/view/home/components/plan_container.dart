@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -6,8 +8,10 @@ import 'package:intl/intl.dart';
 import 'package:rehaal/models/plan_model.dart';
 import 'package:rehaal/utils/app_icons.dart';
 import 'package:rehaal/utils/app_images.dart';
+import 'package:rehaal/utils/app_routes.dart';
 import 'package:rehaal/utils/app_text.dart';
 import 'package:rehaal/utils/app_theme.dart';
+import 'package:rehaal/view/home/controller/home_controller.dart';
 import 'package:rehaal/view/plans/controller/plans_controller.dart';
 
 class PlanContainer extends StatelessWidget {
@@ -20,7 +24,7 @@ class PlanContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final planController = Get.put(PlansController());
+    final planController = Get.put(HomeController());
 
     return Container(
       width: 144.w,
@@ -32,12 +36,19 @@ class PlanContainer extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
-            child: Image.asset(
-              AppImages.planImage,
-              fit: BoxFit.cover,
-              width: 144.w,
-              height: 200.h,
-            ),
+            child: plan.imagePath != null
+                ? Image.file(
+                    File(plan.imagePath!),
+                    fit: BoxFit.cover,
+                    width: 144.w,
+                    height: 200.h,
+                  )
+                : Image.asset(
+                    AppImages.planImage,
+                    fit: BoxFit.cover,
+                    width: 144.w,
+                    height: 200.h,
+                  ),
           ),
           Positioned(
               left: 20,
@@ -94,7 +105,11 @@ class PlanContainer extends StatelessWidget {
                   ],
                 ).then((value) {
                   if (value == 'edit') {
-                    print('Edit selected');
+                    Get.toNamed(AppRoutes.addNewPlanView, arguments: {
+                      'isView': false,
+                      'isEdit': true,
+                      'planModel': plan
+                    });
                   } else if (value == 'delete') {
                     planController.removePlan(plan);
                   }

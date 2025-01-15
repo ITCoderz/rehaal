@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:rehaal/utils/app_theme.dart';
 
 class AuthController extends GetxController {
   final fnEmailL = FocusNode();
@@ -24,4 +26,37 @@ class AuthController extends GetxController {
   final tecResetPassword = TextEditingController();
   final tecResetPasswordC = TextEditingController();
   RxBool isCheck = false.obs;
+
+  final GlobalKey<FormState> createAccountKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> loginKey = GlobalKey<FormState>();
+
+  Future<void> selectDOB(BuildContext context) async {
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+                primary: AppTheme.primaryColor,
+                onPrimary: Colors.white,
+                onSurface: Colors.black),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: AppTheme.primaryColor,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (selectedDate != null) {
+      tecDobS.text =
+          "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
+    }
+  }
 }

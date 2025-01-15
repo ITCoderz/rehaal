@@ -138,6 +138,7 @@ class CustomTextFormField extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     color: AppTheme.blackColor),
             obscureText: obscureText!,
+            obscuringCharacter: '*',
             inputFormatters: inputFormatters,
             textInputAction: textInputAction,
             keyboardType: textInputType,

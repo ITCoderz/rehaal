@@ -8,8 +8,10 @@ import 'package:rehaal/utils/app_images.dart';
 import 'package:rehaal/utils/app_routes.dart';
 import 'package:rehaal/utils/app_text.dart';
 import 'package:rehaal/utils/app_theme.dart';
+import 'package:rehaal/utils/helpers.dart';
 import 'package:rehaal/utils/ui_gaps.dart';
 import 'package:rehaal/view/bottom_nav_bar/controller/bottom_bar_controller.dart';
+import 'package:rehaal/view/home/controller/home_controller.dart';
 import 'package:rehaal/view/plans/components/my_timelime_tile.dart';
 import 'package:rehaal/view/plans/controller/plans_controller.dart';
 
@@ -18,9 +20,17 @@ class ViewActivities extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final arguments = Get.arguments;
+    bool isView = false;
+    bool isEdit = false;
     final controller = Get.put(PlansController());
-    final bottomController = Get.put(BottomBarController());
-
+    final homeController = Get.put(HomeController());
+    print("Length : ${homeController.activities.length}");
+    if (arguments != null) {
+      isView = arguments['isView'];
+      isEdit = arguments['isEdit'];
+      Get.log(arguments['isView'].toString());
+    }
     return SafeArea(
         child: Scaffold(
             backgroundColor: AppTheme.whiteColor,
@@ -43,43 +53,44 @@ class ViewActivities extends StatelessWidget {
                           color: AppTheme.bluTextColor,
                         ),
                       ),
-                      Obx(() => controller.isActivityAdded.value
+                      Obx(() => homeController.activities.isNotEmpty
                           ? Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 verticalSpace(5),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    AppText(
-                                      text: 'Add new activity',
-                                      fontSize: 16.sp,
-                                      color: AppTheme.greyTextColor,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        Get.toNamed(AppRoutes.addNewActivity);
-                                      },
-                                      child: Container(
-                                        width: 47.w,
-                                        height: 47.h,
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: AppTheme.primaryColor),
-                                        child: Center(
-                                          child: Icon(
-                                            Icons.add,
-                                            color: AppTheme.whiteColor,
-                                            size: 35,
+                                if (!isView)
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      AppText(
+                                        text: 'Add new activity',
+                                        fontSize: 16.sp,
+                                        color: AppTheme.greyTextColor,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          Get.toNamed(AppRoutes.addNewActivity);
+                                        },
+                                        child: Container(
+                                          width: 47.w,
+                                          height: 47.h,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: AppTheme.primaryColor),
+                                          child: Center(
+                                            child: Icon(
+                                              Icons.add,
+                                              color: AppTheme.whiteColor,
+                                              size: 35,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                verticalSpace(40),
+                                      )
+                                    ],
+                                  ),
+                                if (!isView) verticalSpace(40),
                                 AppText(
                                   text: 'SWITZERLAND',
                                   fontSize: 18.sp,
@@ -103,43 +114,42 @@ class ViewActivities extends StatelessWidget {
                                   ],
                                 ),
                                 verticalSpace(10),
-                                MyTimelimeTile(
-                                  isFirst: true,
-                                  isLast: false,
-                                  isPast: true,
-                                  date: '5 Jun',
-                                  title: 'Visit The Louvre Museum',
-                                ),
-                                MyTimelimeTile(
-                                  isFirst: false,
-                                  isLast: false,
-                                  isPast: true,
-                                  date: '5 Jun',
-                                  title: 'Visit  Disneyland Paris',
-                                ),
-                                MyTimelimeTile(
-                                  isFirst: false,
-                                  isLast: true,
-                                  isPast: false,
-                                  date: '6 Jun',
-                                  title: 'Coconut grove',
-                                ),
-                                verticalSpace(20),
-                                Center(
-                                  child: SizedBox(
-                                    width: Get.width * 0.6,
-                                    child: CustomButtonWidget(
-                                      btnLabel: '',
-                                      isIcon: true,
-                                      onTap: () {
-                                        Get.close(2);
-                                        bottomController.tabIndex.value = 0;
+                                Obx(() => ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount:
+                                          homeController.activities.length,
+                                      itemBuilder: (context, index) {
+                                        var activity =
+                                            homeController.activities[index];
+                                        return MyTimelimeTile(
+                                          isFirst: index == 0,
+                                          isLast: index ==
+                                              homeController.activities.length -
+                                                  1,
+                                          isPast: Helpers()
+                                              .isPastDate(activity.date),
+                                          date: activity.date,
+                                          title: activity.name,
+                                        );
                                       },
-                                      icon: AppIcons.homeIcon,
-                                      isGradientBg: true,
+                                    )),
+                                verticalSpace(20),
+                                if (!isView)
+                                  Center(
+                                    child: SizedBox(
+                                      width: Get.width * 0.6,
+                                      child: CustomButtonWidget(
+                                        btnLabel: '',
+                                        isIcon: true,
+                                        onTap: () {
+                                          Get.close(1);
+                                        },
+                                        icon: AppIcons.homeIcon,
+                                        isGradientBg: true,
+                                      ),
                                     ),
-                                  ),
-                                )
+                                  )
                               ],
                             )
                           : NoActivityFound(controller: controller))

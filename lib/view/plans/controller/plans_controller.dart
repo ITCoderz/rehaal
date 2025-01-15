@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:rehaal/models/plan_model.dart';
 import 'package:rehaal/utils/app_theme.dart';
+import 'package:rehaal/view/home/controller/home_controller.dart';
 
 class PlansController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -25,32 +29,82 @@ class PlansController extends GetxController
   final tecActivityAmount = TextEditingController();
   final tecMemberName = TextEditingController();
   final tecMemberPhone = TextEditingController();
+  bool isView = false;
 
   RxBool isActivityAdded = false.obs;
-  RxBool isImageSelected = false.obs;
   RxInt activeStep = 0.obs;
-  RxList<Member> members = <Member>[].obs;
-  RxList<PlanModel> plans = <PlanModel>[].obs;
+  final homeController = Get.find<HomeController>();
+
+  RxBool isImageSelected = false.obs;
+  Rx<File?> selectedImage = Rx<File?>(null); // To hold the selected image
+
+  final ImagePicker _picker = ImagePicker();
+  var selectedImagePath = ''.obs;
+  Future<void> selectImageFromGallery() async {
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      selectedImage.value = File(pickedFile.path);
+      selectedImagePath.value = pickedFile.path;
+      isImageSelected.value = true;
+    } else {
+      isImageSelected.value = false;
+    }
+  }
 
   void addMember(Member member) {
-    members.add(member);
+    homeController.members.add(member);
+  }
+
+  void addActivity(Activity activity) {
+    homeController.activities.add(activity);
+    tecActivityName.clear();
+    tecActivityAmount.clear();
+    tecActivityDate.clear();
   }
 
   void addPlan(PlanModel plan) {
-    plans.add(plan);
+    homeController.plans.add(plan);
     print(plan.toJson());
+    print('Members before clearing: ${plan.members}'); // Debug members
+    print('Activities before clearing: ${plan.activities}');
     tecDestination.clear();
     tecBudget.clear();
     tecDurationSDate.clear();
     tecDurationEDate.clear();
+    homeController.members.clear();
+    isImageSelected.value = false;
+    selectedImagePath.value = '';
+    selectedImage.value = null;
+  }
+
+  void updatePlan(PlanModel updatedPlan) {
+    int index = homeController.plans
+        .indexWhere((plan) => plan.imagePath == updatedPlan.imagePath);
+
+    // If plan exists, update it
+    if (index != -1) {
+      homeController.plans[index] = updatedPlan;
+      print(updatedPlan.toJson());
+      tecDestination.clear();
+      tecBudget.clear();
+      tecDurationSDate.clear();
+      tecDurationEDate.clear();
+      homeController.members.clear();
+      isImageSelected.value = false;
+      selectedImagePath.value = '';
+      selectedImage.value = null;
+    } else {
+      print('Plan not found');
+    }
   }
 
   void removeMember(Member member) {
-    members.remove(member);
+    homeController.members.remove(member);
   }
 
   void removePlan(PlanModel plan) {
-    plans.remove(plan);
+    homeController.plans.remove(plan);
   }
 
   Future<void> selectDate(BuildContext context,
@@ -92,6 +146,22 @@ class PlansController extends GetxController
 
   @override
   void onInit() {
+    print('AddNewPlanView initialized');
+    final arguments = Get.arguments;
+    print('Arguments: $arguments');
+
+    if (arguments != null) {
+      isView = arguments['isView'] ?? false;
+      final planModel = arguments['planModel'] as PlanModel;
+      tecDestination.text = planModel.destinationName;
+      tecBudget.text = planModel.budget.toString();
+      tecDurationSDate.text =
+          "${DateFormat('d MMM').format(planModel.startDate)}";
+      tecDurationEDate.text =
+          "${DateFormat('d MMM').format(planModel.endDate)}";
+      isImageSelected.value = true;
+      selectedImagePath.value = planModel.imagePath!;
+    }
     super.onInit();
     animationController = AnimationController(
       duration: const Duration(seconds: 2),

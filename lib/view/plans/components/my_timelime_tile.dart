@@ -32,7 +32,7 @@ class MyTimelimeTile extends StatelessWidget {
             color: isPast ? AppTheme.primaryColor : AppTheme.iconColor,
             thickness: 2),
         startChild: AppText(
-          text: '5 Jun',
+          text: date,
           fontSize: 13.sp,
           fontWeight: FontWeight.w300,
           color: AppTheme.blackColor,
@@ -64,12 +64,12 @@ class MyTimelimeTile extends StatelessWidget {
             children: [
               horizontalSpace(10),
               AppText(
-                text: 'Visit the Louvre Museum',
+                text: title,
                 fontSize: 16.sp,
                 color: AppTheme.primaryColor,
                 fontWeight: FontWeight.w600,
               ),
-              horizontalSpace(20),
+              Spacer(),
               Container(
                 width: 43.w,
                 height: 43.h,

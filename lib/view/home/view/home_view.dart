@@ -9,6 +9,7 @@ import 'package:rehaal/utils/app_routes.dart';
 import 'package:rehaal/utils/app_text.dart';
 import 'package:rehaal/utils/app_theme.dart';
 import 'package:rehaal/utils/ui_gaps.dart';
+import 'package:rehaal/view/auth/controller/auth_controller.dart';
 import 'package:rehaal/view/home/components/plan_container.dart';
 import 'package:rehaal/view/home/controller/home_controller.dart';
 import 'package:rehaal/view/plans/controller/plans_controller.dart';
@@ -18,8 +19,8 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(HomeController());
-    final planController = Get.put(PlansController());
+    final controller = Get.put(HomeController(), permanent: true);
+    final authController = Get.put(AuthController());
 
     return Scaffold(
       backgroundColor: AppTheme.whiteColor,
@@ -33,7 +34,7 @@ class HomeView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 AppText(
-                  text: 'Hello Ali',
+                  text: 'Hello ${authController.tecNameS.text ?? ''}',
                   fontSize: 24.sp,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.blackColor,
@@ -59,7 +60,7 @@ class HomeView extends StatelessWidget {
                 ),
               ],
             ),
-            Obx(() => planController.plans.isNotEmpty
+            Obx(() => controller.plans.isNotEmpty
                 ? Column(
                     children: [
                       verticalSpace(20),
@@ -74,6 +75,8 @@ class HomeView extends StatelessWidget {
                           ),
                           InkWell(
                             onTap: () {
+                              controller.members.clear();
+                              controller.activities.clear();
                               Get.toNamed(AppRoutes.addNewPlanView);
                             },
                             child: Container(
@@ -97,13 +100,13 @@ class HomeView extends StatelessWidget {
                     ],
                   )
                 : SizedBox()),
-            Obx(() => verticalSpace(planController.plans.isEmpty ? 70 : 20)),
+            Obx(() => verticalSpace(controller.plans.isEmpty ? 70 : 20)),
             AppText(
               text: 'Your Plans',
               fontSize: 18.sp,
               fontWeight: FontWeight.w600,
             ),
-            Obx(() => planController.plans.isEmpty
+            Obx(() => controller.plans.isEmpty
                 ? Column(
                     children: [
                       verticalSpace(60),
@@ -163,11 +166,25 @@ class HomeView extends StatelessWidget {
                                 mainAxisSpacing: 20.h,
                                 childAspectRatio: 1.6,
                               ),
-                              itemCount: planController.plans.length,
+                              itemCount: controller.plans.length,
                               itemBuilder: (context, index) {
-                                final plan = planController.plans[index];
-                                return PlanContainer(
-                                  plan: plan,
+                                final plan = controller.plans[index];
+                                print('Plan ${index + 1}: ${plan.toJson()}');
+                                return InkWell(
+                                  onTap: () {
+                                    print('Member : ${plan.members}');
+                                    print('Activities : ${plan.activities}');
+
+                                    Get.toNamed(AppRoutes.addNewPlanView,
+                                        arguments: {
+                                          'isView': true,
+                                          'isEdit': false,
+                                          'planModel': plan
+                                        });
+                                  },
+                                  child: PlanContainer(
+                                    plan: plan,
+                                  ),
                                 );
                               }))
                     ],

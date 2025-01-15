@@ -41,49 +41,66 @@ class ProfileView extends StatelessWidget {
                   ),
                   verticalSpace(50),
                   Stack(clipBehavior: Clip.none, children: [
-                    Container(
-                      width: 110.w,
-                      height: 110.h,
-                      decoration: BoxDecoration(
+                    Obx(
+                      () => Container(
+                        width: 110,
+                        height: 110,
+                        decoration: BoxDecoration(
                           color: Color(0xffF9FDFC),
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                                offset: Offset(0, 0),
-                                blurRadius: 10,
-                                color: AppTheme.blackColor.withOpacity(0.1))
+                              offset: Offset(0, 0),
+                              blurRadius: 10,
+                              color: Colors.black.withOpacity(0.1),
+                            ),
                           ],
                           border: Border.all(
-                            color: AppTheme.whiteColor,
+                            color: Colors.white,
                             width: 2,
-                          )),
-                      child: Center(
-                        child: Icon(
-                          Icons.person,
-                          color: AppTheme.purpleColor,
-                          size: 50,
+                          ),
+                          image: controller.selectedImage.value != null
+                              ? DecorationImage(
+                                  image: FileImage(
+                                      controller.selectedImage.value!),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
                         ),
+                        child: controller.selectedImage.value == null
+                            ? Center(
+                                child: Icon(
+                                  Icons.person,
+                                  color: Colors.purple,
+                                  size: 50,
+                                ),
+                              )
+                            : null,
                       ),
                     ),
                     Positioned(
-                      bottom: 0,
-                      right: -10,
-                      child: Container(
-                        width: 44.w,
-                        padding: EdgeInsets.only(top: 5),
-                        height: 44.h,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: AppTheme.whiteColor,
-                              width: 2,
+                        bottom: 0,
+                        right: -10,
+                        child: GestureDetector(
+                          onTap: () {
+                            controller.pickImage();
+                          },
+                          child: Container(
+                            width: 44.w,
+                            padding: EdgeInsets.only(top: 5),
+                            height: 44.h,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppTheme.whiteColor,
+                                  width: 2,
+                                ),
+                                gradient: AppTheme.gradientColor),
+                            child: Center(
+                              child: SvgPicture.asset(AppIcons.cameraIcon),
                             ),
-                            gradient: AppTheme.gradientColor),
-                        child: Center(
-                          child: SvgPicture.asset(AppIcons.cameraIcon),
-                        ),
-                      ),
-                    )
+                          ),
+                        ))
                   ]),
                   verticalSpace(70),
                   CustomTextFormField(
@@ -121,6 +138,9 @@ class ProfileView extends StatelessWidget {
                   CustomTextFormField(
                     fieldLabel: 'DOB',
                     focusNode: controller.fnDob,
+                    onTap: () {
+                      controller.selectDOB(context);
+                    },
                     controller: controller.tecDob,
                     givePadding: true,
                     prefix: Icon(
@@ -140,8 +160,8 @@ class ProfileView extends StatelessWidget {
                   verticalSpace(20),
                   CustomTextFormField(
                     fieldLabel: 'Password',
-                    focusNode: controller.fnEmail,
-                    controller: controller.tecEmail,
+                    focusNode: controller.fnPasswod,
+                    controller: controller.tecPassword,
                     givePadding: true,
                     obscureText: true,
                     suffix: Padding(
