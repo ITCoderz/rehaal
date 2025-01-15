@@ -21,7 +21,7 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(HomeController(), permanent: true);
     final authController = Get.put(AuthController());
-
+    controller.loadPlansFromStorage();
     return Scaffold(
       backgroundColor: AppTheme.whiteColor,
       body: Padding(
@@ -129,6 +129,8 @@ class HomeView extends StatelessWidget {
                           horizontalSpace(20),
                           InkWell(
                             onTap: () {
+                              controller.members.clear();
+                              controller.activities.clear();
                               Get.toNamed(AppRoutes.addNewPlanView);
                             },
                             child: Container(

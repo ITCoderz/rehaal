@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:rehaal/models/plan_model.dart';
 import 'package:rehaal/utils/app_theme.dart';
 import 'package:rehaal/view/home/controller/home_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PlansController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -40,6 +42,23 @@ class PlansController extends GetxController
 
   final ImagePicker _picker = ImagePicker();
   var selectedImagePath = ''.obs;
+
+  Future<void> selectActivityDate() async {
+    // Show a date picker
+    DateTime? pickedDate = await showDatePicker(
+    
+      context: Get.context!,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2101),
+      
+    );
+
+    if (pickedDate != null) {
+      tecActivityDate.text = DateFormat('dd/MM/yyyy').format(pickedDate);
+    }
+  }
+
   Future<void> selectImageFromGallery() async {
     final XFile? pickedFile =
         await _picker.pickImage(source: ImageSource.gallery);
@@ -72,10 +91,31 @@ class PlansController extends GetxController
     tecBudget.clear();
     tecDurationSDate.clear();
     tecDurationEDate.clear();
-    homeController.members.clear();
+
     isImageSelected.value = false;
     selectedImagePath.value = '';
     selectedImage.value = null;
+  }
+
+  Future<void> savePlansToStorage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      print("Number of plans before saving: ${homeController.plans.length}");
+
+      final plansJson =
+          homeController.plans.map((plan) => plan.toJson()).toList();
+      print("Plans to save: $plansJson");
+
+      await prefs.setString('plans', jsonEncode(plansJson));
+      print(jsonEncode(plansJson));
+      print("Plans saved to SharedPreferences");
+
+      await homeController.loadPlansFromStorage();
+      print('Plans saved and reloaded successfully!');
+    } catch (e, stackTrace) {
+      print('Error saving plans: $e');
+      print('Stack trace: $stackTrace');
+    }
   }
 
   void updatePlan(PlanModel updatedPlan) {
@@ -90,7 +130,7 @@ class PlansController extends GetxController
       tecBudget.clear();
       tecDurationSDate.clear();
       tecDurationEDate.clear();
-      homeController.members.clear();
+
       isImageSelected.value = false;
       selectedImagePath.value = '';
       selectedImage.value = null;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:rehaal/components/custom_button_widget.dart';
 import 'package:rehaal/utils/app_icons.dart';
 import 'package:rehaal/utils/app_images.dart';
@@ -129,7 +130,9 @@ class ViewActivities extends StatelessWidget {
                                                   1,
                                           isPast: Helpers()
                                               .isPastDate(activity.date),
-                                          date: activity.date,
+                                          date: DateFormat('d MMM').format(
+                                              DateFormat('dd/MM/yyyy')
+                                                  .parse(activity.date)),
                                           title: activity.name,
                                         );
                                       },

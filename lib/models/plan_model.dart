@@ -1,39 +1,38 @@
 class PlanModel {
-  String destinationName;
-  double budget;
-  DateTime startDate;
-  DateTime endDate;
-  List<Member> members;
-  String? imagePath;
-  List<Activity> activities;
+  final String destinationName;
+  final double budget;
+  final String imagePath;
+  final DateTime startDate;
+  final DateTime endDate;
+  final List<Activity> activities; // Adjust the type accordingly
+  final List<Member> members; // Adjust the type accordingly
+
   PlanModel({
     required this.destinationName,
     required this.budget,
+    required this.imagePath,
     required this.startDate,
     required this.endDate,
-    this.members = const [], // Default to empty list
-    this.activities = const [],
-    this.imagePath,
+    required this.activities,
+    required this.members,
   });
 
   factory PlanModel.fromJson(Map<String, dynamic> json) {
     return PlanModel(
-      destinationName: json['destinationName'] as String,
-      budget: (json['budget'] as num).toDouble(),
-      startDate: DateTime.parse(json['startDate'] as String),
-      endDate: DateTime.parse(json['endDate'] as String),
-      members: (json['members'])
-              ?.map((member) => Member.fromJson(member as Map<String, dynamic>))
-              .toList() ??
-          [],
-      activities: (json['activities'] as List<dynamic>?)
-              ?.map((activity) =>
-                  Activity.fromJson(activity as Map<String, dynamic>))
-              .toList() ??
-          [],
-      imagePath: json['imagePath'] as String?,
+      destinationName: json['destinationName'],
+      budget: json['budget'].toDouble(),
+      imagePath: json['imagePath'],
+      startDate: DateTime.parse(json['startDate']),
+      endDate: DateTime.parse(json['endDate']),
+      activities: (json['activities'] as List)
+          .map((activity) => Activity.fromJson(activity))
+          .toList(),
+      members: (json['members'] as List)
+          .map((member) => Member.fromJson(member))
+          .toList(),
     );
   }
+
   Map<String, dynamic> toJson() {
     return {
       'destinationName': destinationName,

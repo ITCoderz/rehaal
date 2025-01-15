@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -59,15 +61,15 @@ class ProfileView extends StatelessWidget {
                             color: Colors.white,
                             width: 2,
                           ),
-                          image: controller.selectedImage.value != null
+                          image: controller.selectedImagePath.value.isNotEmpty
                               ? DecorationImage(
                                   image: FileImage(
-                                      controller.selectedImage.value!),
+                                      File(controller.selectedImagePath.value)),
                                   fit: BoxFit.cover,
                                 )
                               : null,
                         ),
-                        child: controller.selectedImage.value == null
+                        child: controller.selectedImagePath.value.isEmpty
                             ? Center(
                                 child: Icon(
                                   Icons.person,
@@ -181,6 +183,9 @@ class ProfileView extends StatelessWidget {
                       child: CustomButtonWidget(
                         btnLabel: 'Save',
                         isGradientBg: true,
+                        onTap: () async {
+                          await controller.saveImage();
+                        },
                       ),
                     ),
                   )

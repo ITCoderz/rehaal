@@ -294,39 +294,40 @@ class AddNewPlanView extends StatelessWidget {
                               spacing: 20,
                               runSpacing: 30,
                               children: [
-                                InkWell(
-                                  onTap: () {
-                                    Get.toNamed(AppRoutes.addMember);
-                                  },
-                                  child: Container(
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          width: 40.w,
-                                          height: 40.h,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                                color: AppTheme.primaryColor),
-                                          ),
-                                          child: Center(
-                                            child: Icon(
-                                              Icons.add,
-                                              color: AppTheme.primaryColor,
+                                if (!isView)
+                                  InkWell(
+                                    onTap: () {
+                                      Get.toNamed(AppRoutes.addMember);
+                                    },
+                                    child: Container(
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            width: 40.w,
+                                            height: 40.h,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                  color: AppTheme.primaryColor),
+                                            ),
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.add,
+                                                color: AppTheme.primaryColor,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        verticalSpace(5),
-                                        AppText(
-                                          text: 'Add',
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w500,
-                                          color: AppTheme.primaryColor,
-                                        ),
-                                      ],
+                                          verticalSpace(5),
+                                          AppText(
+                                            text: 'Add',
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppTheme.primaryColor,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
                                 ...homeController.members.map((member) {
                                   return Container(
                                     child: Column(
@@ -372,7 +373,7 @@ class AddNewPlanView extends StatelessWidget {
                         child: CustomButtonWidget(
                           btnLabel: isEdit ? 'Update' : 'Add',
                           isGradientBg: true,
-                          onTap: () {
+                          onTap: () async {
                             String errorMessage = '';
                             // Validate fields
                             if (controller.tecDestination.text.isEmpty) {
@@ -409,9 +410,12 @@ class AddNewPlanView extends StatelessWidget {
                                 activities: homeController.activities,
                                 members: homeController.members);
                             if (isEdit) {
-                              //controller.updatePlan(plan);
+                              print(homeController.members);
+                              controller.updatePlan(plan);
+                              await controller.savePlansToStorage();
                             } else {
                               homeController.plans.add(plan);
+                              await controller.savePlansToStorage();
                             }
                             Get.back();
                           },

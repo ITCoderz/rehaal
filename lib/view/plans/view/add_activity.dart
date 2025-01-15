@@ -55,6 +55,10 @@ class AddActivity extends StatelessWidget {
                       verticalSpace(30),
                       CustomTextFormField(
                         fieldLabel: 'Date of activity',
+                        onTap: () {
+                          controller.selectActivityDate();
+                        },
+                        isViewMode: true,
                         labelStyle: TextStyles.labelTextStyle.copyWith(
                             fontSize: 18.sp,
                             color: AppTheme.bluTextColor,

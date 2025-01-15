@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rehaal/utils/app_theme.dart';
 import 'package:rehaal/view/auth/controller/auth_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileController extends GetxController {
   final fnName = FocusNode();
@@ -21,6 +22,7 @@ class ProfileController extends GetxController {
   Rx<File?> selectedImage = Rx<File?>(null);
 
   final ImagePicker _picker = ImagePicker();
+  RxString selectedImagePath = ''.obs;
 
   Future<void> pickImage() async {
     final XFile? image = await _picker.pickImage(
@@ -30,6 +32,23 @@ class ProfileController extends GetxController {
 
     if (image != null) {
       selectedImage.value = File(image.path);
+      selectedImagePath.value = image.path;
+    }
+  }
+
+  Future<void> saveImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedImagePath', selectedImagePath.value);
+  }
+
+  Future<void> loadImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? imagePath = prefs.getString('selectedImagePath');
+
+    if (imagePath != null && imagePath.isNotEmpty) {
+      selectedImagePath.value = imagePath;
+    } else {
+      selectedImagePath.value = '';
     }
   }
 
@@ -66,6 +85,7 @@ class ProfileController extends GetxController {
   @override
   void onInit() {
     // TODO: implement onInit
+    loadImage();
     super.onInit();
 
     tecName.text = authController.tecNameS.text ?? '';
