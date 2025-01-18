@@ -22,135 +22,151 @@ class LoginView extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         backgroundColor: AppTheme.whiteColor,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            children: [
-              verticalSpace(30),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: AppText(
-                      text: 'Login',
-                      fontSize: 26.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.bluTextColor,
+                  verticalSpace(30),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 15.0),
+                        child: AppText(
+                          text: 'Login',
+                          fontSize: 26.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.bluTextColor,
+                        ),
+                      ),
+                      Image.asset(
+                        AppImages.appLogo,
+                        width: 140.w,
+                        height: 140.h,
+                      )
+                    ],
+                  ),
+                  verticalSpace(30),
+                  Form(
+                    key: controller.loginKey,
+                    child: Column(
+                      children: [
+                        CustomTextFormField(
+                          fieldLabel: 'E-mail Address',
+                          focusNode: controller.fnEmailL,
+                          controller: controller.tecEmailL,
+                          givePadding: true,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter your email';
+                            } else if (!RegExp(
+                                    r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$')
+                                .hasMatch(value)) {
+                              return 'Please enter a valid email address';
+                            }
+                            return null;
+                          },
+                          hintText: 'test@test.com',
+                          prefix: Image.asset(
+                            AppIcons.emailIcon,
+                            width: 20,
+                            height: 20,
+                          ),
+                          prefixConstraints: const BoxConstraints(),
+                        ),
+                        verticalSpace(30),
+                        CustomTextFormField(
+                          fieldLabel: 'Password',
+                          givePadding: true,
+                          obscureText: true,
+                          focusNode: controller.fnPasswordL,
+                          controller: controller.tecPasswordL,
+                          validator: (value) {
+                            if (value != null) {
+                              if (value.isEmpty) {
+                                return 'Please enter your password';
+                              } else if (value.length < 6) {
+                                return 'Password must be at least 6 characters long';
+                              }
+                            }
+                            return null;
+                          },
+                          prefix: Image.asset(
+                            AppIcons.passwordIcon,
+                            width: 20,
+                            height: 20,
+                          ),
+                          hintText: '******',
+                          prefixConstraints: const BoxConstraints(),
+                        ),
+                      ],
                     ),
                   ),
-                  Image.asset(
-                    AppImages.appLogo,
-                    width: 140.w,
-                    height: 140.h,
-                  )
+                  verticalSpace(20),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: InkWell(
+                      onTap: () {
+                        Get.toNamed(AppRoutes.resetPassword);
+                      },
+                      child: AppText(
+                        text: 'Forget Password?',
+                        color: AppTheme.bluTextColor,
+                      ),
+                    ),
+                  ),
+                  verticalSpace(80), // Adjust spacing for content clarity
                 ],
               ),
-              verticalSpace(30),
-              Form(
-                  key: controller.loginKey,
-                  child: Column(
-                    children: [
-                      CustomTextFormField(
-                        fieldLabel: 'E-mail Address',
-                        focusNode: controller.fnEmailL,
-                        controller: controller.tecEmailL,
-                        givePadding: true,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter your email';
-                          } else if (!RegExp(
-                                  r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$')
-                              .hasMatch(value)) {
-                            return 'Please enter a valid email address';
-                          }
-                          return null;
-                        },
-                        hintText: 'test@test.com',
-                        prefix: Image.asset(
-                          AppIcons.emailIcon,
-                          width: 20,
-                          height: 20,
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 20.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CustomButtonWidget(
+                      btnLabel: 'Login',
+                      isGradientBg: true,
+                      onTap: () {
+                        if (controller.loginKey.currentState!.validate()) {
+                          Get.toNamed(AppRoutes.bottomNavBar);
+                        }
+                      },
+                    ),
+                    verticalSpace(20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AppText(
+                          text: "Don't have an account? ",
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w500,
+                          color: AppTheme.greyColor,
                         ),
-                        prefixConstraints: BoxConstraints(),
-                      ),
-                      verticalSpace(30),
-                      CustomTextFormField(
-                        fieldLabel: 'Password',
-                        givePadding: true,
-                        obscureText: true,
-                        focusNode: controller.fnPasswordL,
-                        controller: controller.tecPasswordL,
-                        validator: (value) {
-                          if (value != null) {
-                            if (value.isEmpty) {
-                              return 'Please enter your password';
-                            } else if (value.length < 6) {
-                              return 'Password must be at least 6 characters long';
-                            }
-                          }
-                          return null;
-                        },
-                        prefix: Image.asset(
-                          AppIcons.passwordIcon,
-                          width: 20,
-                          height: 20,
+                        InkWell(
+                          onTap: () {
+                            Get.toNamed(AppRoutes.createAccount);
+                          },
+                          child: AppText(
+                            text: "Create Account",
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w500,
+                            color: AppTheme.bluTextColor,
+                          ),
                         ),
-                        hintText: '******',
-                        prefixConstraints: BoxConstraints(),
-                      ),
-                    ],
-                  )),
-              verticalSpace(20),
-              Align(
-                alignment: Alignment.centerRight,
-                child: InkWell(
-                  onTap: () {
-                    Get.toNamed(AppRoutes.resetPassword);
-                  },
-                  child: AppText(
-                    text: 'Forget Password?',
-                    color: AppTheme.bluTextColor,
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              Spacer(),
-              CustomButtonWidget(
-                btnLabel: 'Login',
-                isGradientBg: true,
-                onTap: () {
-                  if (controller.loginKey.currentState!.validate()) {
-                    Get.toNamed(AppRoutes.bottomNavBar);
-                  }
-                },
-              ),
-              verticalSpace(20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AppText(
-                    text: "Don't have an account? ",
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w500,
-                    color: AppTheme.greyColor,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Get.toNamed(AppRoutes.createAccount);
-                    },
-                    child: AppText(
-                      text: "Create Account",
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w500,
-                      color: AppTheme.bluTextColor,
-                    ),
-                  )
-                ],
-              ),
-              verticalSpace(40),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

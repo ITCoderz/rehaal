@@ -26,172 +26,174 @@ class HomeView extends StatelessWidget {
       backgroundColor: AppTheme.whiteColor,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            verticalSpace(70),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                AppText(
-                  text: 'Hello ${authController.tecNameS.text ?? ''}',
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.blackColor,
-                ),
-                InkWell(
-                  onTap: () {
-                    Get.toNamed(AppRoutes.profileView);
-                  },
-                  child: Container(
-                    width: 54.w,
-                    height: 54.h,
-                    decoration: BoxDecoration(
-                        border:
-                            Border.all(color: AppTheme.primaryColor, width: 2),
-                        shape: BoxShape.circle),
-                    child: Center(
-                      child: Icon(
-                        Icons.person,
-                        color: AppTheme.bluTextColor,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              verticalSpace(70),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  AppText(
+                    text: 'Hello ${authController.tecNameS.text ?? ''}',
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.blackColor,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Get.toNamed(AppRoutes.profileView);
+                    },
+                    child: Container(
+                      width: 54.w,
+                      height: 54.h,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: AppTheme.primaryColor, width: 2),
+                          shape: BoxShape.circle),
+                      child: Center(
+                        child: Icon(
+                          Icons.person,
+                          color: AppTheme.bluTextColor,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            Obx(() => controller.plans.isNotEmpty
-                ? Column(
-                    children: [
-                      verticalSpace(20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          AppText(
-                            text: 'Add new Plan',
-                            fontSize: 16.sp,
-                            color: AppTheme.greyTextColor,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              controller.members.clear();
-                              controller.activities.clear();
-                              Get.toNamed(AppRoutes.addNewPlanView);
-                            },
-                            child: Container(
-                              width: 47.w,
-                              height: 47.h,
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: AppTheme.primaryColor),
-                              child: Center(
-                                child: Icon(
-                                  Icons.add,
-                                  color: AppTheme.whiteColor,
-                                  size: 35,
-                                ),
-                              ),
+                ],
+              ),
+              Obx(() => controller.plans.isNotEmpty
+                  ? Column(
+                      children: [
+                        verticalSpace(20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AppText(
+                              text: 'Add new Plan',
+                              fontSize: 16.sp,
+                              color: AppTheme.greyTextColor,
+                              fontWeight: FontWeight.w500,
                             ),
-                          )
-                        ],
-                      ),
-                      verticalSpace(20),
-                    ],
-                  )
-                : SizedBox()),
-            Obx(() => verticalSpace(controller.plans.isEmpty ? 70 : 20)),
-            AppText(
-              text: 'Your Plans',
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w600,
-            ),
-            Obx(() => controller.plans.isEmpty
-                ? Column(
-                    children: [
-                      verticalSpace(60),
-                      Center(
-                        child: Image.asset(
-                          AppImages.appLogo,
-                          width: 250.w,
-                        ),
-                      ),
-                      verticalSpace(30),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          AppText(
-                            text: 'Add new Plan',
-                            fontSize: 16.sp,
-                            color: AppTheme.primaryColor,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          horizontalSpace(20),
-                          InkWell(
-                            onTap: () {
-                              controller.members.clear();
-                              controller.activities.clear();
-                              Get.toNamed(AppRoutes.addNewPlanView);
-                            },
-                            child: Container(
-                              width: 40.w,
-                              height: 40.h,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: AppTheme.primaryColor,
-                                ),
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  Icons.add,
-                                  color: AppTheme.primaryColor,
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      )
-                    ],
-                  )
-                : Column(
-                    children: [
-                      verticalSpace(20),
-                      Container(
-                          height: 450.h,
-                          child: GridView.builder(
-                              scrollDirection: Axis.horizontal,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 10.w,
-                                mainAxisSpacing: 20.h,
-                                childAspectRatio: 1.6,
-                              ),
-                              itemCount: controller.plans.length,
-                              itemBuilder: (context, index) {
-                                final plan = controller.plans[index];
-                                print('Plan ${index + 1}: ${plan.toJson()}');
-                                return InkWell(
-                                  onTap: () {
-                                    print('Member : ${plan.members}');
-                                    print('Activities : ${plan.activities}');
-
-                                    Get.toNamed(AppRoutes.addNewPlanView,
-                                        arguments: {
-                                          'isView': true,
-                                          'isEdit': false,
-                                          'planModel': plan
-                                        });
-                                  },
-                                  child: PlanContainer(
-                                    plan: plan,
+                            InkWell(
+                              onTap: () {
+                                controller.members.clear();
+                                controller.activities.clear();
+                                Get.toNamed(AppRoutes.addNewPlanView);
+                              },
+                              child: Container(
+                                width: 47.w,
+                                height: 47.h,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: AppTheme.primaryColor),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.add,
+                                    color: AppTheme.whiteColor,
+                                    size: 35,
                                   ),
-                                );
-                              }))
-                    ],
-                  ))
-          ],
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                        verticalSpace(20),
+                      ],
+                    )
+                  : SizedBox()),
+              Obx(() => verticalSpace(controller.plans.isEmpty ? 70 : 20)),
+              AppText(
+                text: 'Your Plans',
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600,
+              ),
+              Obx(() => controller.plans.isEmpty
+                  ? Column(
+                      children: [
+                        verticalSpace(60),
+                        Center(
+                          child: Image.asset(
+                            AppImages.appLogo,
+                            width: 250.w,
+                          ),
+                        ),
+                        verticalSpace(30),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            AppText(
+                              text: 'Add new Plan',
+                              fontSize: 16.sp,
+                              color: AppTheme.primaryColor,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            horizontalSpace(20),
+                            InkWell(
+                              onTap: () {
+                                controller.members.clear();
+                                controller.activities.clear();
+                                Get.toNamed(AppRoutes.addNewPlanView);
+                              },
+                              child: Container(
+                                width: 40.w,
+                                height: 40.h,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppTheme.primaryColor,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.add,
+                                    color: AppTheme.primaryColor,
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        verticalSpace(20),
+                        Container(
+                            height: 450.h,
+                            child: GridView.builder(
+                                scrollDirection: Axis.horizontal,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 10.w,
+                                  mainAxisSpacing: 20.h,
+                                  childAspectRatio: 1.6,
+                                ),
+                                itemCount: controller.plans.length,
+                                itemBuilder: (context, index) {
+                                  final plan = controller.plans[index];
+                                  print('Plan ${index + 1}: ${plan.toJson()}');
+                                  return InkWell(
+                                    onTap: () {
+                                      print('Member : ${plan.members}');
+                                      print('Activities : ${plan.activities}');
+
+                                      Get.toNamed(AppRoutes.addNewPlanView,
+                                          arguments: {
+                                            'isView': true,
+                                            'isEdit': false,
+                                            'planModel': plan
+                                          });
+                                    },
+                                    child: PlanContainer(
+                                      plan: plan,
+                                    ),
+                                  );
+                                }))
+                      ],
+                    ))
+            ],
+          ),
         ),
       ),
     );

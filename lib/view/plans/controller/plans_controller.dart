@@ -46,12 +46,10 @@ class PlansController extends GetxController
   Future<void> selectActivityDate() async {
     // Show a date picker
     DateTime? pickedDate = await showDatePicker(
-    
       context: Get.context!,
       initialDate: DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime(2101),
-      
     );
 
     if (pickedDate != null) {
@@ -73,6 +71,8 @@ class PlansController extends GetxController
 
   void addMember(Member member) {
     homeController.members.add(member);
+    tecMemberName.clear();
+    tecMemberPhone.clear();
   }
 
   void addActivity(Activity activity) {
