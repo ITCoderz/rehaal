@@ -54,14 +54,14 @@ class Member {
   Member({
     required this.memberName,
     required this.phone,
-    required  this.memberId,
+    required this.memberId,
   });
 
   factory Member.fromJson(Map<String, dynamic> json) {
     return Member(
       memberName: json['memberName'] as String,
       phone: json['phone'] as String,
-      memberId:  json['memberId'] as String,
+      memberId: json['memberId'] as String,
     );
   }
 
@@ -69,7 +69,7 @@ class Member {
     return {
       'memberName': memberName,
       'phone': phone,
-      'memberId' : memberId,
+      'memberId': memberId,
     };
   }
 }
@@ -78,11 +78,15 @@ class Activity {
   String name;
   String date;
   double cost;
+  String activityId;
+  bool isPast;
 
   Activity({
     required this.name,
     required this.date,
     required this.cost,
+    required this.activityId,
+    this.isPast = false,
   });
 
   factory Activity.fromJson(Map<String, dynamic> json) {
@@ -90,6 +94,8 @@ class Activity {
       name: json['name'] as String,
       date: json['date'] as String,
       cost: (json['cost'] as num).toDouble(),
+      activityId: json['activityId'] as String,
+      isPast: json['isPast'] ?? false,
     );
   }
 
@@ -98,6 +104,24 @@ class Activity {
       'name': name,
       'date': date,
       'cost': cost,
+      'activityId': activityId,
+      'isPast': isPast,
     };
+  }
+
+  Activity copyWith({
+    String? name,
+    String? date,
+    double? cost,
+    String? activityId,
+    bool? isPast,
+  }) {
+    return Activity(
+      name: name ?? this.name,
+      date: date ?? this.date,
+      cost: cost ?? this.cost,
+      activityId: activityId ?? this.activityId,
+      isPast: isPast ?? this.isPast,
+    );
   }
 }

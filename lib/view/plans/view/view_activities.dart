@@ -108,9 +108,22 @@ class ViewActivities extends StatelessWidget {
                                       fontWeight: FontWeight.w600,
                                     ),
                                     horizontalSpace(10),
-                                    SvgPicture.asset(
-                                      AppIcons.editIcon,
-                                      color: AppTheme.iconColor,
+                                    InkWell(
+                                      onTap: () {
+                                        for (var activity
+                                            in homeController.activities) {
+                                          homeController.activities[
+                                                  homeController.activities
+                                                      .indexOf(activity)] =
+                                              activity.copyWith(isPast: false);
+                                        }
+                                        homeController.activities.refresh();
+                                      },
+                                      child: Icon(
+                                        Icons.change_circle_outlined,
+                                        color: AppTheme.iconColor,
+                                        size: 25,
+                                      ),
                                     )
                                   ],
                                 ),
@@ -123,17 +136,46 @@ class ViewActivities extends StatelessWidget {
                                       itemBuilder: (context, index) {
                                         var activity =
                                             homeController.activities[index];
-                                        return MyTimelimeTile(
-                                          isFirst: index == 0,
-                                          isLast: index ==
-                                              homeController.activities.length -
-                                                  1,
-                                          isPast: Helpers()
-                                              .isPastDate(activity.date),
-                                          date: DateFormat('d MMM').format(
-                                              DateFormat('dd/MM/yyyy')
-                                                  .parse(activity.date)),
-                                          title: activity.name,
+                                        return InkWell(
+                                          onTap: () {
+                                            if (isView) {
+                                            } else {
+                                              controller.activityId =
+                                                  activity.activityId;
+                                              controller.tecActivityName.text =
+                                                  activity.name;
+                                              controller.tecActivityDate.text =
+                                                  activity.date;
+                                              controller
+                                                      .tecActivityAmount.text =
+                                                  activity.cost.toString();
+                                              Get.toNamed(
+                                                  AppRoutes.addNewActivity,
+                                                  arguments: {'isEdit': true});
+                                            }
+                                          },
+                                          child: MyTimelimeTile(
+                                            isFirst: index == 0,
+                                            isLast: index ==
+                                                homeController
+                                                        .activities.length -
+                                                    1,
+                                            onCheckTap: () {
+                                              homeController.activities[index] =
+                                                  activity.copyWith(
+                                                      isPast:
+                                                          true); // Update the activity
+                                              homeController.activities
+                                                  .refresh(); // Refresh the list
+                                            },
+                                            isPast: activity.isPast,
+                                            //  Helpers()
+                                            //     .isPastDate(activity.date),
+                                            date: DateFormat('d MMM').format(
+                                                DateFormat('dd/MM/yyyy')
+                                                    .parse(activity.date)),
+                                            title: activity.name,
+                                          ),
                                         );
                                       },
                                     )),
@@ -202,6 +244,9 @@ class NoActivityFound extends StatelessWidget {
           horizontalSpace(20),
           InkWell(
             onTap: () {
+              controller.tecActivityAmount.clear();
+              controller.tecActivityDate.clear();
+              controller.tecActivityName.clear();
               Get.toNamed(AppRoutes.addNewActivity);
             },
             child: Container(

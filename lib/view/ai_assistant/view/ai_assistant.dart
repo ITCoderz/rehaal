@@ -73,19 +73,21 @@ class AiAssistant extends StatelessWidget {
             ),
             verticalSpace(30),
             Expanded(
-                child: ListView.builder(
+              child: Obx(() => ListView.builder(
                     reverse: false,
                     controller: controller.scrollController,
-                    itemCount: 2,
+                    itemCount: controller.messages.length,
                     itemBuilder: (context, index) {
+                      final message = controller.messages[index];
                       return ChatMessage(
-                          text: index == 0
-                              ? 'I want some resturant recomendation in Rome'
-                              : 'Is it for breakfast , lunch or dinner ?',
-                          isMe: index == 0,
-                          lastMessageStatus: 'seen',
-                          showStatus: false);
-                    })),
+                        text: message['text'] as String,
+                        isMe: message['isMe'] as bool,
+                        lastMessageStatus: 'seen',
+                        showStatus: false,
+                      );
+                    },
+                  )),
+            ),
             Container(
               decoration: BoxDecoration(
                 color: AppTheme.whiteColor,
@@ -106,7 +108,9 @@ class AiAssistant extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        controller.sendMessage(controller.tecMessage.text);
+                      },
                       child: Center(
                           child: Padding(
                         padding: const EdgeInsets.only(left: 3.0),

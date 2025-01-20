@@ -12,12 +12,14 @@ class MyTimelimeTile extends StatelessWidget {
       required this.isLast,
       required this.isPast,
       required this.date,
+      required this.onCheckTap,
       required this.title});
   final bool isFirst;
   final bool isLast;
   final bool isPast;
   final String date;
   final String title;
+  final VoidCallback onCheckTap;
 
   @override
   Widget build(BuildContext context) {
@@ -70,17 +72,20 @@ class MyTimelimeTile extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
               Spacer(),
-              Container(
-                width: 43.w,
-                height: 43.h,
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.check,
-                    color: AppTheme.whiteColor,
+              GestureDetector(
+                onTap: onCheckTap, // Trigger callback on tap
+                child: Container(
+                  width: 43.w,
+                  height: 43.h,
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.check,
+                      color: AppTheme.whiteColor,
+                    ),
                   ),
                 ),
               )
