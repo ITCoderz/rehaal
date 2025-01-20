@@ -47,18 +47,21 @@ class PlanModel {
 }
 
 class Member {
+  String memberId;
   String memberName;
   String phone;
 
   Member({
     required this.memberName,
     required this.phone,
+    required  this.memberId,
   });
 
   factory Member.fromJson(Map<String, dynamic> json) {
     return Member(
       memberName: json['memberName'] as String,
       phone: json['phone'] as String,
+      memberId:  json['memberId'] as String,
     );
   }
 
@@ -66,6 +69,7 @@ class Member {
     return {
       'memberName': memberName,
       'phone': phone,
+      'memberId' : memberId,
     };
   }
 }

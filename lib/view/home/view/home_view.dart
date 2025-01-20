@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,6 +15,7 @@ import 'package:rehaal/view/auth/controller/auth_controller.dart';
 import 'package:rehaal/view/home/components/plan_container.dart';
 import 'package:rehaal/view/home/controller/home_controller.dart';
 import 'package:rehaal/view/plans/controller/plans_controller.dart';
+import 'package:rehaal/view/profile/controller/profile_controller.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -21,6 +24,8 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(HomeController(), permanent: true);
     final authController = Get.put(AuthController());
+    final profileController = Get.put(ProfileController());
+
     controller.loadPlansFromStorage();
     return Scaffold(
       backgroundColor: AppTheme.whiteColor,
@@ -44,18 +49,42 @@ class HomeView extends StatelessWidget {
                     onTap: () {
                       Get.toNamed(AppRoutes.profileView);
                     },
-                    child: Container(
-                      width: 54.w,
-                      height: 54.h,
-                      decoration: BoxDecoration(
+                    child: Obx(
+                      () => Container(
+                        width: 54,
+                        height: 54,
+                        decoration: BoxDecoration(
+                          color: Color(0xffF9FDFC),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              offset: Offset(0, 0),
+                              blurRadius: 10,
+                              color: Colors.black.withOpacity(0.1),
+                            ),
+                          ],
                           border: Border.all(
-                              color: AppTheme.primaryColor, width: 2),
-                          shape: BoxShape.circle),
-                      child: Center(
-                        child: Icon(
-                          Icons.person,
-                          color: AppTheme.bluTextColor,
+                            color: Colors.white,
+                            width: 2,
+                          ),
+                          image: profileController
+                                  .selectedImagePath.value.isNotEmpty
+                              ? DecorationImage(
+                                  image: FileImage(File(profileController
+                                      .selectedImagePath.value)),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
                         ),
+                        child: profileController.selectedImagePath.value.isEmpty
+                            ? Center(
+                                child: Icon(
+                                  Icons.person,
+                                  color: AppTheme.primaryColor,
+                                  size: 30,
+                                ),
+                              )
+                            : null,
                       ),
                     ),
                   ),

@@ -17,7 +17,6 @@ class ProfileController extends GetxController {
   final tecEmail = TextEditingController();
   final tecDob = TextEditingController();
   final tecPassword = TextEditingController();
-  final authController = Get.put(AuthController());
 
   Rx<File?> selectedImage = Rx<File?>(null);
 
@@ -82,19 +81,40 @@ class ProfileController extends GetxController {
     }
   }
 
+  final authController = Get.put(AuthController());
+
   @override
   void onInit() {
-    // TODO: implement onInit
-    loadImage();
     super.onInit();
 
-    tecName.text = authController.tecNameS.text ?? '';
+    tecName.text = authController.tecNameS.text;
     tecEmail.text = authController.tecEmailL.text.isNotEmpty
         ? authController.tecEmailL.text
-        : authController.tecEmailS.text ?? '';
-    tecDob.text = authController.tecDobS.text ?? '';
+        : authController.tecEmailS.text;
+    tecDob.text = authController.tecDobS.text;
     tecPassword.text = authController.tecPasswordL.text.isNotEmpty
         ? authController.tecPasswordL.text
-        : authController.tecPasswordS.text ?? '';
+        : authController.tecPasswordS.text;
+
+    tecName.addListener(() {
+      authController.tecNameS.text = tecName.text;
+    });
+    tecEmail.addListener(() {
+      if (authController.tecEmailL.text.isNotEmpty) {
+        authController.tecEmailL.text = tecEmail.text;
+      } else {
+        authController.tecEmailS.text = tecEmail.text;
+      }
+    });
+    tecDob.addListener(() {
+      authController.tecDobS.text = tecDob.text;
+    });
+    tecPassword.addListener(() {
+      if (authController.tecPasswordL.text.isNotEmpty) {
+        authController.tecPasswordL.text = tecPassword.text;
+      } else {
+        authController.tecPasswordS.text = tecPassword.text;
+      }
+    });
   }
 }

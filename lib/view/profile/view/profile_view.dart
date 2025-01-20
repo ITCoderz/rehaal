@@ -7,9 +7,12 @@ import 'package:get/get.dart';
 import 'package:rehaal/components/custom_button_widget.dart';
 import 'package:rehaal/components/custom_text_form_field.dart';
 import 'package:rehaal/utils/app_icons.dart';
+import 'package:rehaal/utils/app_routes.dart';
 import 'package:rehaal/utils/app_text.dart';
+import 'package:rehaal/utils/text_styles.dart';
 import 'package:rehaal/utils/ui_gaps.dart';
 import 'package:rehaal/view/profile/controller/profile_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../utils/app_theme.dart';
 
@@ -23,6 +26,7 @@ class ProfileView extends StatelessWidget {
         child: Scaffold(
             backgroundColor: AppTheme.whiteColor,
             appBar: AppBar(
+              surfaceTintColor: AppTheme.whiteColor,
               automaticallyImplyLeading: true,
               backgroundColor: AppTheme.whiteColor,
             ),
@@ -73,7 +77,7 @@ class ProfileView extends StatelessWidget {
                             ? Center(
                                 child: Icon(
                                   Icons.person,
-                                  color: Colors.purple,
+                                  color: AppTheme.primaryColor,
                                   size: 50,
                                 ),
                               )
@@ -184,11 +188,65 @@ class ProfileView extends StatelessWidget {
                         btnLabel: 'Save',
                         isGradientBg: true,
                         onTap: () async {
-                          await controller.saveImage();
+                          bool? confirm = await showDialog<bool>(
+                            context: Get.context!,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Confirmation'),
+                                content: Text(
+                                    'Are you sure you want to save changes?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(false);
+                                    },
+                                    child: Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(true);
+                                    },
+                                    child: Text('Confirm'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          if (confirm == true) {
+                            controller.authController.update();
+                            await controller.saveImage();
+
+                            Get.snackbar(
+                              'Success',
+                              'Your changes have been saved successfully!',
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.green,
+                              colorText: Colors.white,
+                            );
+                          }
                         },
                       ),
                     ),
-                  )
+                  ),
+                  verticalSpace(10),
+                  SizedBox(
+                    width: Get.width * 0.6,
+                    child: Center(
+                      child: CustomButtonWidget(
+                        btnLabel: 'Logout',
+                        isGradientBg: true,
+                        btnLabelStyle: TextStyles.labelTextStyle.copyWith(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16.sp,
+                            color: Color(0xffC12C2C)),
+                        onTap: () async {
+                          Get.offAllNamed(AppRoutes.loginView);
+                        },
+                      ),
+                    ),
+                  ),
+                  verticalSpace(20),
                 ])))));
   }
 }

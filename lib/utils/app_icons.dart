@@ -11,4 +11,5 @@ class AppIcons {
   static const editIcon = 'assets/icons/edit_icon.svg';
   static const menuIcon = 'assets/icons/menu_icon.svg';
   static const cameraIcon = 'assets/icons/camera_icon.svg';
+  static const deleteIcon = 'assets/icons/delete_icon.svg';
 }

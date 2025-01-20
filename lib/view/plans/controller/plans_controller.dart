@@ -32,6 +32,7 @@ class PlansController extends GetxController
   final tecMemberName = TextEditingController();
   final tecMemberPhone = TextEditingController();
   bool isView = false;
+  String memberId = '';
 
   RxBool isActivityAdded = false.obs;
   RxInt activeStep = 0.obs;
@@ -73,6 +74,32 @@ class PlansController extends GetxController
     homeController.members.add(member);
     tecMemberName.clear();
     tecMemberPhone.clear();
+  }
+
+  void deleteMember(String memberId) {
+    // Remove the member by matching the memberId
+    homeController.members.removeWhere((m) => m.memberId == memberId);
+
+    // Update the UI
+    update(); // Assuming update() is a method in your controller to refresh the UI
+    print('After removing member: ${homeController.members.length}');
+  }
+
+  void updateMember(Member updatedMember) {
+    // Find the index of the member based on the memberId
+    int index = homeController.members
+        .indexWhere((m) => m.memberId == updatedMember.memberId);
+
+    if (index != -1) {
+      // Update the member at the found index
+      homeController.members[index] = updatedMember;
+
+      // Update the UI
+      update(); // Assuming update() is a method in your controller to refresh the UI
+      print('Members count after update: ${homeController.members.length}');
+    } else {
+      print('Member not found.');
+    }
   }
 
   void addActivity(Activity activity) {

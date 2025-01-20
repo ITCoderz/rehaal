@@ -99,39 +99,39 @@ class AddNewPlanView extends StatelessWidget {
                 return !controller.isImageSelected.value
                     ? Center(
                         child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          Image.asset(
-                            AppIcons.imageIcon,
-                            width: 143.w,
-                            height: 135.h,
-                          ),
-                          Positioned(
-                            bottom: -30,
-                            right: -30,
-                            child: InkWell(
-                              onTap: () {
-                                controller.selectImageFromGallery();
-                              },
-                              child: Container(
-                                width: 55.w,
-                                height: 55.h,
-                                decoration: BoxDecoration(
-                                  color: Color(0xff71AEF3).withOpacity(0.7),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    Icons.add,
-                                    color: Color(0xff3863AA),
-                                    size: 40,
-                                  ),
-                                ),
+                          clipBehavior: Clip.none,
+                          children: [
+                            Image.asset(
+                              AppIcons.imageIcon,
+                              width: 143.w,
+                              height: 135.h,
+                            ),
+                            Positioned(
+                              bottom: -10,
+                              right: -20,
+                              child: GestureDetector(
+                                onTap: () {
+                                  controller.selectImageFromGallery();
+                                },
+                                child: Container(
+                                    width: 55.w,
+                                    height: 55.h,
+                                    decoration: BoxDecoration(
+                                      color: Color(0xff71AEF3).withOpacity(0.7),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.add,
+                                        color: Color(0xff3863AA),
+                                        size: 40,
+                                      ),
+                                    )),
                               ),
                             ),
-                          ),
-                        ],
-                      ))
+                          ],
+                        ),
+                      )
                     : SizedBox();
               }),
               Obx(() =>
@@ -251,6 +251,9 @@ class AddNewPlanView extends StatelessWidget {
                                 horizontalSpace(10),
                                 InkWell(
                                   onTap: () {
+                                    controller.tecMemberName.clear();
+                                    controller.tecMemberPhone.clear();
+
                                     Get.toNamed(AppRoutes.addMember);
                                   },
                                   child: Container(
@@ -297,6 +300,8 @@ class AddNewPlanView extends StatelessWidget {
                                 if (!isView)
                                   InkWell(
                                     onTap: () {
+                                      controller.tecMemberName.clear();
+                                      controller.tecMemberPhone.clear();
                                       Get.toNamed(AppRoutes.addMember);
                                     },
                                     child: Container(
@@ -329,32 +334,46 @@ class AddNewPlanView extends StatelessWidget {
                                     ),
                                   ),
                                 ...homeController.members.map((member) {
-                                  return Container(
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          width: 40.w,
-                                          height: 40.h,
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: AppTheme.primaryColor),
-                                          child: Center(
-                                            child: Icon(
-                                              Icons.person,
-                                              color: AppTheme.whiteColor,
+                                  return InkWell(
+                                    onTap: () {
+                                      if (isView) {
+                                      } else {
+                                        controller.tecMemberName.text =
+                                            member.memberName;
+                                        controller.tecMemberPhone.text =
+                                            member.phone;
+                                        controller.memberId = member.memberId;
+                                        Get.toNamed(AppRoutes.addMember,
+                                            arguments: {'isEdit': true});
+                                      }
+                                    },
+                                    child: Container(
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            width: 40.w,
+                                            height: 40.h,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: AppTheme.primaryColor),
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.person,
+                                                color: AppTheme.whiteColor,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        verticalSpace(5),
-                                        AppText(
-                                          text: member.memberName,
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w500,
-                                          color: AppTheme.blackColor
-                                              .withOpacity(0.8),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ],
+                                          verticalSpace(5),
+                                          AppText(
+                                            text: member.memberName,
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppTheme.blackColor
+                                                .withOpacity(0.8),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   );
                                 }).toList(),

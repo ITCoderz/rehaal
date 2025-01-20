@@ -8,6 +8,7 @@ import 'package:rehaal/utils/app_text.dart';
 import 'package:rehaal/utils/app_theme.dart';
 import 'package:rehaal/utils/text_styles.dart';
 import 'package:rehaal/utils/ui_gaps.dart';
+import 'package:rehaal/view/home/controller/home_controller.dart';
 import 'package:rehaal/view/plans/controller/plans_controller.dart';
 
 class AddActivity extends StatelessWidget {
@@ -16,6 +17,7 @@ class AddActivity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(PlansController());
+    final homeController = Get.find<HomeController>();
 
     return SafeArea(
         child: Scaffold(
@@ -85,7 +87,7 @@ class AddActivity extends StatelessWidget {
                       ),
                       verticalSpace(20),
                       AppText(
-                        text: 'Who payed?',
+                        text: 'Who Paid?',
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w400,
                         color: AppTheme.greyTextColor,
@@ -99,34 +101,39 @@ class AddActivity extends StatelessWidget {
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(color: AppTheme.borderColor)),
                         child: Wrap(
-                          spacing: 30,
+                          spacing: 20,
                           runSpacing: 30,
                           children: [
-                            for (int i = 0; i < 5; i++)
-                              Container(
-                                  child: Column(children: [
-                                Container(
-                                  width: 40.w,
-                                  height: 40.h,
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: AppTheme.primaryColor),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.person,
-                                      color: AppTheme.whiteColor,
+                            ...homeController.members.map((member) {
+                              return Container(
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: 40.w,
+                                      height: 40.h,
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: AppTheme.primaryColor),
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.person,
+                                          color: AppTheme.whiteColor,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    verticalSpace(5),
+                                    AppText(
+                                      text: member.memberName,
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color:
+                                          AppTheme.blackColor.withOpacity(0.8),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
                                 ),
-                                verticalSpace(5),
-                                AppText(
-                                  text: 'John',
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppTheme.blackColor.withOpacity(0.8),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ]))
+                              );
+                            }).toList(),
                           ],
                         ),
                       ),

@@ -157,9 +157,12 @@ class CreateAccountView extends StatelessWidget {
                           validator: (value) {
                             if (value != null) {
                               if (value.isEmpty) {
-                                return 'Please enter your password';
+                                return 'Please re-enter your password';
                               } else if (value.length < 6) {
                                 return 'Password must be at least 6 characters long';
+                              } else if (value !=
+                                  controller.tecPasswordS.text) {
+                                return 'Passwords do not match';
                               }
                             }
                             return null;
