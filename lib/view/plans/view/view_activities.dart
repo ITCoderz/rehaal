@@ -101,6 +101,8 @@ class ViewActivities extends StatelessWidget {
                                 Image.asset(AppImages.activityImage),
                                 verticalSpace(20),
                                 Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     AppText(
                                       text: 'Schedule',
@@ -108,23 +110,23 @@ class ViewActivities extends StatelessWidget {
                                       fontWeight: FontWeight.w600,
                                     ),
                                     horizontalSpace(10),
-                                    InkWell(
-                                      onTap: () {
-                                        for (var activity
-                                            in homeController.activities) {
-                                          homeController.activities[
-                                                  homeController.activities
-                                                      .indexOf(activity)] =
-                                              activity.copyWith(isPast: false);
-                                        }
-                                        homeController.activities.refresh();
-                                      },
-                                      child: Icon(
-                                        Icons.change_circle_outlined,
-                                        color: AppTheme.iconColor,
-                                        size: 25,
-                                      ),
-                                    )
+                                    if (!isView)
+                                      InkWell(
+                                        onTap: () {
+                                          for (var activity
+                                              in homeController.activities) {
+                                            homeController.activities[
+                                                    homeController
+                                                        .activities
+                                                        .indexOf(activity)] =
+                                                activity.copyWith(
+                                                    isPast: false);
+                                          }
+                                          homeController.activities.refresh();
+                                        },
+                                        child: SvgPicture.asset(
+                                            AppIcons.resetIcon),
+                                      )
                                   ],
                                 ),
                                 verticalSpace(10),
@@ -161,12 +163,16 @@ class ViewActivities extends StatelessWidget {
                                                         .activities.length -
                                                     1,
                                             onCheckTap: () {
-                                              homeController.activities[index] =
-                                                  activity.copyWith(
-                                                      isPast:
-                                                          true); // Update the activity
-                                              homeController.activities
-                                                  .refresh(); // Refresh the list
+                                              if (isView) {
+                                              } else {
+                                                homeController
+                                                        .activities[index] =
+                                                    activity.copyWith(
+                                                        isPast:
+                                                            true); // Update the activity
+                                                homeController.activities
+                                                    .refresh(); // Refresh the list
+                                              }
                                             },
                                             isPast: activity.isPast,
                                             //  Helpers()
